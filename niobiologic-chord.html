@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NIOBIOLOGIC // CHORD MODULE</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  background:#0a0a12;
+  background-image:linear-gradient(rgba(0,255,204,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,204,0.04) 1px,transparent 1px);
+  background-size:32px 32px;
+  font-family:'Press Start 2P',monospace;
+  color:#e0e0e0;
+  min-height:100vh;
+}
+#app{padding:16px;display:flex;gap:14px;flex-wrap:wrap;justify-content:center;align-items:flex-start;min-height:100vh;}
+.panel{background:rgba(10,10,18,0.98);border:4px solid #4a4a4a;overflow:hidden;position:relative;box-shadow:inset 0 0 50px rgba(0,0,0,0.9),0 0 25px rgba(0,0,0,0.8);}
+.panel::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(-45deg,transparent,transparent 8px,rgba(0,255,204,0.015) 8px,rgba(0,255,204,0.015) 9px);pointer-events:none;z-index:1;}
+.panel::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(to bottom,transparent 0px,transparent 3px,rgba(0,0,0,0.15) 3px,rgba(0,0,0,0.15) 4px);pointer-events:none;z-index:1;}
+.pctrl{width:250px;padding:14px;display:flex;flex-direction:column;gap:10px;position:relative;z-index:2;}
+.plib{width:200px;padding:12px;display:flex;flex-direction:column;gap:6px;position:relative;z-index:2;}
+.ptitle{font-size:7px;color:#00ffcc;text-align:center;border-bottom:2px solid #1a1a2e;padding-bottom:8px;letter-spacing:3px;}
+.flbl{font-size:6px;color:#8a8a8a;margin-bottom:3px;letter-spacing:1px;}
+.pxi{font-family:'Press Start 2P',monospace;font-size:7px;background:#000;border:3px solid #4a4a4a;color:#00ffcc;padding:6px 8px;width:100%;outline:none;}
+.pxi:focus{border-color:#00ffcc;}
+.pxs{font-family:'Press Start 2P',monospace;font-size:6px;background:#000;border:3px solid #4a4a4a;color:#00ffcc;padding:5px 6px;width:100%;outline:none;cursor:pointer;}
+.pxs:focus{border-color:#00ffcc;}
+.sgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;}
+.scol{display:flex;flex-direction:column;gap:2px;align-items:center;}
+.slbl{font-size:5px;color:#8a8a8a;text-align:center;}
+.sstat{font-family:'Press Start 2P',monospace;font-size:6px;background:#000;border:2px solid #4a4a4a;color:#fff;width:100%;padding:3px 0;text-align:center;cursor:pointer;user-select:none;}
+.sstat:active{transform:translate(1px,1px);}
+.sstat.mu{background:#1a0a0a;color:#ff0055;border-color:#ff0055;}
+.sstat.op{background:#0a1a12;color:#00ffcc;border-color:#00ffcc;}
+.fcell{font-family:'Press Start 2P',monospace;font-size:5px;background:#000;border:2px solid #4a4a4a;color:#8a8a8a;width:100%;padding:3px 0;text-align:center;cursor:pointer;user-select:none;}
+.fcell:active{transform:translate(1px,1px);}
+.fcell.act{background:#0a1a12;color:#00ffcc;border-color:#00ffcc;}
+.fcell:hover:not(.act){background:#1a1a2e;}
+.pxb{font-family:'Press Start 2P',monospace;font-size:6px;background:#3a3a5e;border:3px solid #6a6a8e;color:#fff;padding:8px 0;width:100%;cursor:pointer;letter-spacing:1px;}
+.pxb:hover{background:#4a4a6e;}
+.pxb:active{transform:translate(1px,1px);}
+.pxb.or{background:#3a2a1a;border-color:#ffd700;color:#ffd700;}
+.pxb.or:hover{background:#4a3a2a;}
+.pxb.dk{background:#1a1a2e;border-color:#4a4a4a;font-size:5px;}
+.pxb.dk:hover{background:#2a2a3e;}
+.sep{border:none;border-top:2px solid #1a1a2e;margin:4px 0;}
+.fngr{display:flex;gap:3px;}
+.fbtn{font-family:'Press Start 2P',monospace;font-size:7px;width:28px;height:28px;border:2px solid #4a4a4a;background:#000;color:#8a8a8a;cursor:pointer;text-align:center;line-height:24px;}
+.fbtn:active{transform:translate(1px,1px);}
+.fbtn.sel{background:#0a1a12;color:#00ffcc;border-color:#00ffcc;}
+.fbtn:hover:not(.sel){background:#1a1a2e;}
+.lib-item{display:flex;align-items:center;gap:4px;}
+.lib-item button.lcb{font-family:'Press Start 2P',monospace;font-size:5px;background:#000;border:2px solid #4a4a4a;color:#fff;padding:6px 7px;text-align:left;cursor:pointer;flex:1;}
+.lib-item button.lcb:hover{background:#1a1a2e;border-color:#ffd700;}
+.lib-item button.lcb:active{transform:translate(1px,1px);}
+.lib-item button.ldb{font-family:'Press Start 2P',monospace;font-size:7px;background:#1a0a0a;border:2px solid #ff0055;color:#ff0055;padding:4px 6px;cursor:pointer;line-height:1;}
+.lib-item button.ldb:hover{background:#2a0a0a;}
+.lib-item button.ldb:active{transform:translate(1px,1px);}
+.libnew{display:flex;flex-direction:column;gap:5px;margin-top:4px;}
+.crdwrap{display:flex;flex-direction:column;align-items:center;gap:8px;background:rgba(10,10,18,0.98);border:4px solid #4a4a4a;padding:16px;position:relative;overflow:hidden;box-shadow:inset 0 0 50px rgba(0,0,0,0.9),0 0 25px rgba(0,0,0,0.8);}
+.tactical-brackets{position:relative;}
+.tactical-brackets::before{content:"";position:absolute;width:12px;height:12px;pointer-events:none;z-index:3;top:-1px;left:-1px;border-top:2px solid rgba(0,255,204,0.3);border-left:2px solid rgba(0,255,204,0.3);}
+.tactical-brackets::after{content:"";position:absolute;width:12px;height:12px;pointer-events:none;z-index:3;bottom:-1px;right:-1px;border-bottom:2px solid rgba(0,255,204,0.3);border-right:2px solid rgba(0,255,204,0.3);}
+canvas#cc{image-rendering:pixelated;border:3px solid #4a4a4a;display:block;position:relative;z-index:2;}
+.exprow{display:flex;gap:6px;width:260px;position:relative;z-index:2;}
+.exprow .pxb{font-size:5px;}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div style="width:100%;max-width:860px;text-align:center;margin-bottom:4px;">
+    <div style="font-size:16px;font-weight:900;letter-spacing:5px;color:#00ffcc;text-shadow:0 0 20px rgba(0,255,204,0.3);">NIOBIOLOGIC</div>
+    <div style="font-size:7px;color:#4a4a4a;letter-spacing:5px;margin-top:4px;">CHORD MODULE // v1.0</div>
+  </div>
+
+  <div class="panel plib">
+    <div class="ptitle">:: BIBLIOTECA ::</div>
+    <div id="libList" style="display:flex;flex-direction:column;gap:5px;margin-top:6px;"></div>
+    <hr class="sep">
+    <div class="libnew">
+      <div class="flbl">GUARDAR ACORDE ACTUAL</div>
+      <button class="pxb or" onclick="saveToLib()">+ GUARDAR</button>
+    </div>
+  </div>
+
+  <div class="panel pctrl">
+    <div class="ptitle">:: EDITOR DE ACORDES ::</div>
+    <div><div class="flbl">NOMBRE</div><input class="pxi" id="chordName" type="text" value="C" maxlength="12"/></div>
+    <div><div class="flbl">DESCRIPCION</div><input class="pxi" id="chordDesc" type="text" value="DO MAYOR" maxlength="20"/></div>
+    <div><div class="flbl">TRASTE INICIAL</div>
+      <select class="pxs" id="startFret">
+        <option value="0">CEJILLA (0)</option>
+        <option value="2">TRASTE 2</option>
+        <option value="3">TRASTE 3</option>
+        <option value="4">TRASTE 4</option>
+        <option value="5">TRASTE 5</option>
+        <option value="7">TRASTE 7</option>
+        <option value="9">TRASTE 9</option>
+      </select>
+    </div>
+    <hr class="sep">
+    <div class="flbl">CUERDAS (pulsa para: ~ → X → O)</div>
+    <div class="sgrid" id="stringStatusRow"></div>
+    <hr class="sep">
+    <div class="flbl">GRID DE DEDOS</div>
+    <div id="fingerGrid"></div>
+    <hr class="sep">
+    <div class="flbl">DEDO ACTIVO</div>
+    <div class="fngr" id="fingerSelector"></div>
+    <hr class="sep">
+    <button class="pxb" onclick="renderChord()">► GENERAR</button>
+    <button class="pxb dk" onclick="clearAll()">LIMPIAR</button>
+  </div>
+
+  <div class="crdwrap tactical-brackets">
+    <canvas id="cc" width="260" height="420"></canvas>
+    <div class="exprow">
+      <button class="pxb" onclick="downloadPNG()">↓ EXPORTAR PNG</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const STR_NAMES=['E2','A','D','G','B','E4'];
+const NF=5;
+
+let lib=[
+  {name:'C',desc:'DO MAYOR',sf:0,mu:[true,false,false,false,false,false],op:[false,false,false,false,false,false],dots:[{s:1,f:1,fn:1},{s:2,f:2,fn:2},{s:4,f:3,fn:3}]},
+  {name:'G',desc:'SOL MAYOR',sf:0,mu:[false,false,false,false,false,false],op:[false,false,true,true,false,false],dots:[{s:5,f:3,fn:3},{s:0,f:2,fn:2},{s:1,f:2,fn:2}]},
+  {name:'Am',desc:'LA MENOR',sf:0,mu:[true,false,false,false,false,false],op:[false,false,false,false,true,false],dots:[{s:1,f:2,fn:2},{s:2,f:2,fn:2},{s:3,f:1,fn:1}]},
+  {name:'Em',desc:'MI MENOR',sf:0,mu:[false,false,false,false,false,false],op:[false,false,true,true,true,true],dots:[{s:0,f:2,fn:2},{s:1,f:2,fn:2}]},
+  {name:'D',desc:'RE MAYOR',sf:0,mu:[true,true,false,false,false,false],op:[false,false,false,false,false,false],dots:[{s:2,f:2,fn:1},{s:3,f:2,fn:2},{s:4,f:3,fn:3}]},
+];
+
+let st={name:'C',desc:'DO MAYOR',sf:0,mu:[true,false,false,false,false,false],op:[false,false,false,false,false,false],dots:[{s:1,f:1,fn:1},{s:2,f:2,fn:2},{s:4,f:3,fn:3}],af:1};
+
+function initSR(){
+  const row=document.getElementById('stringStatusRow');row.innerHTML='';
+  STR_NAMES.forEach((s,i)=>{
+    const col=document.createElement('div');col.className='scol';
+    const l=document.createElement('div');l.className='slbl';l.textContent=s;
+    const b=document.createElement('div');
+    b.className='sstat'+(st.mu[i]?' mu':st.op[i]?' op':'');
+    b.textContent=st.mu[i]?'X':st.op[i]?'O':'~';
+    b.onclick=()=>cycleSt(i);
+    col.appendChild(l);col.appendChild(b);row.appendChild(col);
+  });
+}
+function cycleSt(i){
+  if(!st.mu[i]&&!st.op[i]){st.mu[i]=true;st.op[i]=false;}
+  else if(st.mu[i]){st.mu[i]=false;st.op[i]=true;}
+  else{st.mu[i]=false;st.op[i]=false;}
+  initSR();
+}
+function initFG(){
+  const c=document.getElementById('fingerGrid');c.innerHTML='';
+  const hdr=document.createElement('div');
+  hdr.style.cssText='display:grid;grid-template-columns:14px repeat(6,1fr);gap:3px;margin-bottom:2px;';
+  hdr.appendChild(document.createElement('div'));
+  STR_NAMES.forEach(s=>{const l=document.createElement('div');l.className='slbl';l.style.textAlign='center';l.textContent=s.slice(0,2);hdr.appendChild(l);});
+  c.appendChild(hdr);
+  for(let f=1;f<=NF;f++){
+    const row=document.createElement('div');
+    row.style.cssText='display:grid;grid-template-columns:14px repeat(6,1fr);gap:3px;margin-bottom:2px;';
+    const nl=document.createElement('div');nl.style.cssText='font-size:5px;color:#4a4a4a;text-align:right;padding:2px 0;';nl.textContent=f;row.appendChild(nl);
+    for(let s=0;s<6;s++){
+      const cell=document.createElement('div');
+      const dot=st.dots.find(d=>d.s===s&&d.f===f);
+      cell.className='fcell'+(dot?' act':'');cell.textContent=dot?dot.fn:'';
+      cell.onclick=()=>{toggleDot(s,f);};row.appendChild(cell);
+    }
+    c.appendChild(row);
+  }
+}
+function toggleDot(s,f){
+  const idx=st.dots.findIndex(d=>d.s===s&&d.f===f);
+  if(idx>=0)st.dots.splice(idx,1);
+  else st.dots.push({s,f,fn:st.af});
+  initFG();renderChord();
+}
+function initFS(){
+  const sel=document.getElementById('fingerSelector');sel.innerHTML='';
+  [1,2,3,4].forEach(n=>{
+    const b=document.createElement('div');b.className='fbtn'+(st.af===n?' sel':'');
+    b.textContent=n;b.onclick=()=>{st.af=n;initFS();};sel.appendChild(b);
+  });
+}
+function renderChord(){
+  st.name=document.getElementById('chordName').value.toUpperCase()||'X';
+  st.desc=document.getElementById('chordDesc').value.toUpperCase()||'';
+  st.sf=parseInt(document.getElementById('startFret').value);
+  drawCanvas();
+}
+
+// ── Pixel-art drawing helpers ──
+function drawPixelLineH(ctx, x, y, len, color) {
+  ctx.fillStyle = color;
+  ctx.fillRect(Math.round(x), Math.round(y), len, 1);
+}
+function drawPixelLineV(ctx, x, y, len, color) {
+  ctx.fillStyle = color;
+  ctx.fillRect(Math.round(x), Math.round(y), 1, len);
+}
+function drawPixelFilledCircle(ctx, cx, cy, r, color, ps) {
+  if (ps === undefined) ps = r >= 8 ? 2 : 1;
+  cx = Math.round(cx); cy = Math.round(cy);
+  ctx.fillStyle = color;
+  const lr = Math.floor(r / ps);
+  const limit = ps === 1 ? r*r + 0.5 : lr*lr + lr;
+  for (let dy = -lr; dy <= lr; dy++)
+    for (let dx = -lr; dx <= lr; dx++)
+      if (dx*dx + dy*dy <= limit)
+        ctx.fillRect(cx + dx*ps, cy + dy*ps, ps, ps);
+}
+function drawPixelHollowCircle(ctx, cx, cy, r, color, ps) {
+  if (ps === undefined) ps = r >= 8 ? 2 : 1;
+  cx = Math.round(cx); cy = Math.round(cy);
+  ctx.fillStyle = color;
+  const lr = Math.floor(r / ps);
+  const outerLimit = ps === 1 ? r*r + 0.5 : lr*lr + lr;
+  const innerLimit = ps === 1 ? (r-1)*(r-1) + 0.5 : (lr-1)*(lr-1) + lr/2;
+  for (let dy = -lr; dy <= lr; dy++)
+    for (let dx = -lr; dx <= lr; dx++) {
+      const d = dx*dx + dy*dy;
+      if (d <= outerLimit && d > innerLimit)
+        ctx.fillRect(cx + dx*ps, cy + dy*ps, ps, ps);
+    }
+}
+function drawPixelDot(ctx, cx, cy, r, fill, stroke) {
+  const ps = r >= 8 ? 2 : 1;
+  drawPixelFilledCircle(ctx, cx, cy, r, stroke, ps);
+  drawPixelFilledCircle(ctx, cx, cy, ps === 1 ? r-1 : r-2, fill, ps);
+}
+function drawPixelX(ctx, cx, cy, s, color) {
+  cx = Math.round(cx); cy = Math.round(cy);
+  ctx.fillStyle = color;
+  for (let i = -s; i <= s; i++) {
+    ctx.fillRect(cx + i, cy + i, 1, 1);
+    ctx.fillRect(cx - i, cy + i, 1, 1);
+  }
+}
+
+function drawCanvas(){
+  const canvas=document.getElementById('cc');
+  const ctx=canvas.getContext('2d');
+  const W=260,H=420;
+  ctx.clearRect(0,0,W,H);
+  ctx.imageSmoothingEnabled=false;
+
+  // ── Outer background ──
+  ctx.fillStyle='#0a0a12';
+  ctx.fillRect(0,0,W,H);
+
+  // ── Fretboard ──
+  const MX=12,MY=12;
+  const fbW=W-MX*2,fbH=H-MY*2;
+  const NS=6,numF=5;
+
+  // Dark night-blue fretboard
+  ctx.fillStyle='#0d0d1a';
+  ctx.fillRect(MX,MY,fbW,fbH);
+
+  // Subtle pixel arcade texture (dither dots)
+  ctx.fillStyle='rgba(0,255,204,0.025)';
+  for (let y=MY;y<MY+fbH;y+=4)
+    for (let x=MX+(y%8?0:4);x<MX+fbW;x+=8)
+      ctx.fillRect(Math.round(x),Math.round(y),1,1);
+
+  // Outer border
+  ctx.strokeStyle='#1a1a2e';
+  ctx.lineWidth=3;
+  ctx.strokeRect(MX,MY,fbW,fbH);
+
+  // ── Chord name ──
+  ctx.textAlign='center';
+  ctx.fillStyle='#00ffcc';
+  ctx.font='bold 37px "Press Start 2P",monospace';
+  ctx.fillText(st.name, W/2, MY+46);
+
+  // ── Description (floating, no box) ──
+  ctx.fillStyle='#808080';
+  ctx.font='bold 8px "Press Start 2P",monospace';
+  ctx.textAlign='center';
+  ctx.fillText(st.desc||'---', W/2, MY+62);
+
+  // ── Grid ──
+  const gL=32,gR=228;
+  const cW=(gR-gL)/(NS-1);
+  const FRET_H=44;
+  const NUTW=6;
+
+  const labelY=MY+80;
+  const indY=MY+100;
+  const nutY=indY+18;
+  const gridStart=nutY+NUTW;
+  const gB=gridStart+FRET_H*numF;
+
+  // ── String labels ──
+  ctx.font='bold 8px "Press Start 2P",monospace';
+  ctx.fillStyle='#6060a0';
+  ctx.textAlign='center';
+  for (let s=0;s<NS;s++)
+    ctx.fillText(STR_NAMES[s], gL+s*cW, labelY);
+
+  // ── X / O indicators ──
+  for (let s=0;s<NS;s++){
+    const sx=gL+s*cW;
+    if(st.mu[s]) drawPixelX(ctx, sx, indY, 6, '#ff0055');
+    else if(st.op[s]){
+      drawPixelHollowCircle(ctx, sx, indY, 8, '#00ffcc');
+      drawPixelFilledCircle(ctx, sx, indY, 3, '#00ffcc');
+    }
+  }
+
+  // ── Fret number ──
+  if(st.sf>0){
+    ctx.textAlign='right';
+    ctx.fillStyle='#6060a0';
+    ctx.font='bold 7px "Press Start 2P",monospace';
+    ctx.fillText(''+(st.sf), Math.round(gL-6), Math.round(gridStart+FRET_H/2+3));
+  }
+
+  // ── Nut ──
+  ctx.fillStyle='#6060a0';
+  ctx.fillRect(Math.round(gL-3),Math.round(nutY),Math.round(gR-gL+6),NUTW);
+  ctx.fillStyle='#30304a';
+  ctx.fillRect(Math.round(gL-3),Math.round(nutY),Math.round(gR-gL+6),1);
+  ctx.fillRect(Math.round(gL-3),Math.round(nutY+NUTW-1),Math.round(gR-gL+6),1);
+
+  // ── Fret lines ──
+  for (let f=1;f<=numF;f++){
+    const fy=Math.round(gridStart+f*FRET_H);
+    ctx.fillStyle=f===numF?'rgba(0,255,204,0.25)':'rgba(0,255,204,0.12)';
+    ctx.fillRect(Math.round(gL),fy,Math.round(gR-gL),1);
+  }
+
+  // ── Strings ──
+  for (let s=0;s<NS;s++){
+    const sx=Math.round(gL+s*cW);
+    ctx.fillStyle='rgba(60,60,120,0.4)';
+    ctx.fillRect(sx,Math.round(gridStart),1,Math.round(gB-gridStart));
+  }
+
+  // ── Grid border ──
+  ctx.strokeStyle='#1a1a2e';
+  ctx.lineWidth=2;
+  ctx.strokeRect(gL,gridStart,gR-gL,gB-gridStart);
+
+  // ── Dots ──
+  const DOT_R=12;
+  st.dots.forEach(({s,f,fn})=>{
+    if(f<1||f>numF)return;
+    const cx=gL+s*cW;
+    const cy=gridStart+(f-1)*FRET_H+FRET_H/2;
+    drawPixelDot(ctx, cx, cy, DOT_R, '#00ffcc', '#004040');
+    ctx.fillStyle='#0a0a12';
+    ctx.font='bold 7px "Press Start 2P",monospace';
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.fillText(''+fn, Math.round(cx) + 1, Math.round(cy + 1));
+    ctx.textBaseline='alphabetic';
+  });
+
+  // ── Legend ──
+  const legH=26;
+  const legY=H-MY-legH-4;
+  ctx.fillStyle='#0a0a12';
+  ctx.fillRect(MX+2,legY,fbW-4,legH);
+  ctx.strokeStyle='#2a2a4a';
+  ctx.lineWidth=1;
+  ctx.strokeRect(MX+2,legY,fbW-4,legH);
+
+  ctx.font='6px "Press Start 2P",monospace';
+  ctx.textBaseline='middle';
+  const mY=legY+legH/2;
+
+  const lx1 = 34;
+  drawPixelX(ctx, lx1, mY, 5, '#ff0055');
+  ctx.fillStyle='#8a8a8a';ctx.textAlign='left';
+  ctx.fillText('MUDO', lx1 + 18, mY);
+
+  const lx2 = 112;
+  drawPixelHollowCircle(ctx, lx2, mY, 7, '#00ffcc');
+  drawPixelFilledCircle(ctx, lx2, mY, 3, '#00ffcc');
+  ctx.fillStyle='#8a8a8a';
+  ctx.fillText('AIRE', lx2 + 18, mY);
+
+  const lx3 = 187;
+  drawPixelDot(ctx, lx3, mY, 9, '#00ffcc', '#004040');
+  ctx.fillStyle='#0a0a12';
+  ctx.font='bold 6px "Press Start 2P",monospace';
+  ctx.textAlign='center';
+  ctx.fillText('1', lx3, Math.round(mY+1));
+  ctx.fillStyle='#8a8a8a';ctx.textAlign='left';
+  ctx.fillText('DEDO', lx3 + 18, mY);
+
+  ctx.textBaseline='alphabetic';
+  ctx.textAlign='center';
+
+  // ── Footer ──
+  if(st.sf>0){
+    ctx.fillStyle='#808080';
+    ctx.font='5px "Press Start 2P",monospace';
+    ctx.textAlign='center';
+    ctx.fillText('DESDE TRASTE '+st.sf, W/2, gB+14);
+  }
+}
+
+function downloadPNG(){
+  renderChord();
+  const canvas=document.getElementById('cc');
+  const link=document.createElement('a');
+  link.download=(st.name||'acorde')+'_chord.png';
+  link.href=canvas.toDataURL('image/png');link.click();
+}
+function saveToLib(){
+  renderChord();
+  const entry={name:st.name,desc:st.desc,sf:st.sf,mu:[...st.mu],op:[...st.op],dots:st.dots.map(d=>({...d}))};
+  const idx=lib.findIndex(c=>c.name===st.name);
+  if(idx>=0)lib[idx]=entry;else lib.push(entry);
+  renderLib();
+}
+function loadFromLib(i){
+  const c=lib[i];
+  st.name=c.name;st.desc=c.desc;st.sf=c.sf;
+  st.mu=[...c.mu];st.op=[...c.op];st.dots=c.dots.map(d=>({...d}));
+  document.getElementById('chordName').value=c.name;
+  document.getElementById('chordDesc').value=c.desc;
+  document.getElementById('startFret').value=c.sf;
+  initSR();initFG();renderChord();
+}
+function deleteFromLib(i){lib.splice(i,1);renderLib();}
+function renderLib(){
+  const list=document.getElementById('libList');list.innerHTML='';
+  lib.forEach((c,i)=>{
+    const row=document.createElement('div');row.className='lib-item';
+    const lb=document.createElement('button');lb.className='lcb';
+    lb.innerHTML='<span style="color:#ffd700;font-size:5px">'+c.name+'</span><br><span style="color:#4a4a4a;font-size:4px">'+c.desc+'</span>';
+    lb.onclick=()=>loadFromLib(i);
+    const db=document.createElement('button');db.className='ldb';db.textContent='X';
+    db.onclick=()=>deleteFromLib(i);
+    row.appendChild(lb);row.appendChild(db);list.appendChild(row);
+  });
+}
+function clearAll(){
+  st.dots=[];st.mu=[false,false,false,false,false,false];st.op=[false,false,false,false,false,false];
+  initSR();initFG();renderChord();
+}
+
+renderLib();initSR();initFG();initFS();renderChord();
+</script>
+</body>
+</html>
